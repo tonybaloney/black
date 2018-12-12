@@ -1289,7 +1289,7 @@ class Line:
         if not self:
             return "\n"
 
-        indent = "\t" * self.depth
+        indent = "    " * self.depth
         leaves = iter(self.leaves)
         first = next(leaves)
         res = f"{first.prefix}{indent}{first.value}"
@@ -1536,6 +1536,8 @@ class LineGenerator(Visitor[Line]):
 
         else:
             if not self.is_pyi or not node.parent or not is_stub_suite(node.parent):
+                if len(self.current_line.leaves) > 0 and self.current_line.leaves[-1].type != token.SEMI:
+                    self.current_line.leaves.append(Leaf(token.SEMI, " ;"))
                 yield from self.line()
             yield from self.visit_default(node)
 
@@ -1562,7 +1564,7 @@ class LineGenerator(Visitor[Line]):
 
     def visit_SEMI(self, leaf: Leaf) -> Iterator[Line]:
         """Remove a semicolon and put the other statement on a separate line."""
-        yield from self.line()
+        yield from self.visit_default(leaf)
 
     def visit_ENDMARKER(self, leaf: Leaf) -> Iterator[Line]:
         """End of file. Process outstanding comments and end with a newline."""
