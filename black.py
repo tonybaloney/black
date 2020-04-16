@@ -1590,7 +1590,7 @@ class Line:
         if not self:
             return "\n"
 
-        indent = "    " * self.depth
+        indent = "\t" * self.depth
         leaves = iter(self.leaves)
         first = next(leaves)
         res = f"{first.prefix}{indent}{first.value}"
